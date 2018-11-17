@@ -8,7 +8,7 @@ import logging
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import EVENT_HOMEASSISTANT_STOP, CONF_PORT
+from homeassistant.const import EVENT_HOMEASSISTANT_STOP, CONF_PORT, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.helpers.discovery import load_platform
 from homeassistant.helpers.entity import Entity
 
@@ -24,6 +24,8 @@ VELBUS_MESSAGE = 'velbus.message'
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_PORT): cv.string,
+        vol.Optional(CONF_USERNAME, default=None): cv.string,
+        vol.Optional(CONF_PASSWORD, default=None): cv.string,
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -32,7 +34,9 @@ async def async_setup(hass, config):
     """Set up the Velbus platform."""
     import velbus
     port = config[DOMAIN].get(CONF_PORT)
-    controller = velbus.Controller(port)
+    username = config[DOMAIN].get(CONF_USERNAME)
+    password = config[DOMAIN].get(CONF_PASSWORD)
+    controller = velbus.Controller(port, username, password)
 
     hass.data[DOMAIN] = controller
 
